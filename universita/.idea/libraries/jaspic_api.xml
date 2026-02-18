@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jaspic-api">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../webserver/apache-tomcat-9.0.115/lib/jaspic-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

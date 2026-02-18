@@ -76,8 +76,9 @@ public class Prenota extends HttpServlet {
 				request.getRequestDispatcher("studente.jsp").forward(request, response);
 				return;
 			} // continua normalmente se appello non prenotato
+
 			// inseriamo la prenotazione tramite matricola e idAppello rispettivamente pk di stud e pk di app
-		PreparedStatement smt1 = conn.prepareStatement("INSERT INTO prenotazione(stud_prenotato,app_prenotato) VALUES (?,?)");
+		PreparedStatement smt1 = conn.prepareStatement(" INSERT IGNORE INTO prenotazione(stud_prenotato,app_prenotato) VALUES (?,?)");
 		smt1.setString(1,matricola);//riempiamo il punto interrogativo
 		smt1.setInt(2,idAppello);//riempiamo il secondo
 		smt1.executeUpdate();// udpate perche e una insert

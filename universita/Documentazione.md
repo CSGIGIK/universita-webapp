@@ -970,7 +970,7 @@ professore.jsp
 - `SELECT idAppello FROM appello WHERE idAppello = ? FOR UPDATE`
 - Controllo duplicati + INSERT in transazione atomica
 - `conn.commit()` / `conn.rollback()` / `conn.setAutoCommit(true)`
-  **Beneficio**: Prevenzione double-booking garantita anche con accessi concorrenti
+  **Beneficio**: Prevenzione double-booking garantita anche con accessi concorrenti+
 
 
 
