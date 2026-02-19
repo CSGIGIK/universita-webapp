@@ -51,10 +51,7 @@ public class Prenotazione extends HttpServlet {
 
         try {
             // 2. QUERY 1: Nome materia dal corso
-            PreparedStatement smt1 = conn.prepareStatement(
-                    "SELECT Materia " +
-                            "FROM corso " +
-                            "WHERE idcorso=?");     // Cerca materia per idcorso
+            PreparedStatement smt1 = conn.prepareStatement("SELECT Materia " + "FROM corso " + "WHERE idcorso=?");     // Cerca materia per idcorso
             smt1.setInt(1, idCorso);                              // Imposta parametro idcorso
             ResultSet rs1 = smt1.executeQuery();                  // Esegue query corso
 
@@ -62,10 +59,7 @@ public class Prenotazione extends HttpServlet {
                 String materia = rs1.getString("Materia");        // Salva nome materia (es. "Analisi I")
 
                 // 3. QUERY 2: Appelli associati alla materia
-                PreparedStatement smt2 = conn.prepareStatement(
-                        "SELECT idAppello, Data " +
-                        "FROM appello " +
-                        "WHERE Materia=?");  // Cerca appelli per FK Materia
+                PreparedStatement smt2 = conn.prepareStatement("SELECT idAppello, Data " + "FROM appello " + "WHERE Materia=?");  // Cerca appelli per FK Materia
                 smt2.setInt(1, idCorso);                          // Usa stesso idcorso (FK)
                 ResultSet rsAppelli = smt2.executeQuery();        // Esegue query appelli
 

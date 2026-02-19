@@ -127,7 +127,8 @@ public class login extends HttpServlet {
 
                     request.setAttribute("tabella_corso", rs2); //passo tabella a studente.jsp
                     request.getRequestDispatcher("studente.jsp").forward(request, response); //vai a studente.jsp
-
+                    rs.close();
+                    pstmt.close();
                     return; //login OK
                 }
             } catch (SQLException e) {
@@ -166,18 +167,20 @@ public class login extends HttpServlet {
 
                 if (rsProf.next()) {
                     String tipoUtenteP = rsProf.getString("tipo_utente");//p
+                    int idProfessore = rsProf.getInt("idProfessore");  // ← Dato VERIFICATO dal DB
                     HttpSession session = request.getSession(true);
-                    session.setAttribute("idProfessore", rsProf.getString("idProfessore")); //prendiamo id nome e cognome del prof
+                    session.setAttribute("idProfessore", idProfessore); //prendiamo id nome e cognome del prof
                     session.setAttribute("nome", rsProf.getString("nome"));                 //prendiamo id nome e cognome del prof
                     session.setAttribute("cognome", rsProf.getString("cognome"));           //prendiamo id nome e cognome del prof
                     session.setAttribute("username", username);
                     session.setAttribute("tipo_utente", tipoUtenteP);
-
+                    rsProf.close();
+                    pstmt.close();
                     /** =======================================================
                      *   BLOCCO PROFESSORI - FUNZIONANTE (Corsi-Appelli) - Statement SICURO
                      *   =======================================================
                      */
-                    int idProfessore = rsProf.getInt("idProfessore");  // ← Dato VERIFICATO dal DB
+
                     Statement smtCorsi = connProf.createStatement(); // ID interno = NO injection risk
                     ResultSet rsCorsi = smtCorsi.executeQuery(
                             "SELECT idcorso, materia " +
@@ -185,8 +188,12 @@ public class login extends HttpServlet {
                                     "WHERE cattedra = " + idProfessore);
                     if (rsCorsi.next()) {
                         int idcorso = rsCorsi.getInt("idcorso");
+                        String materiaNome = rsCorsi.getString("materia");
                         session.setAttribute("idcorso", idcorso); //prendiamo id corso
-                        session.setAttribute("materia", rsCorsi.getString("materia"));
+                        session.setAttribute("materia", materiaNome);
+
+                        rsCorsi.close();     // ← AGGIUNGI
+                        smtCorsi.close();    // ← AGGIUNGI
 
                         Statement smtAppelli = connProf.createStatement();
                         ResultSet rsAppelli = smtAppelli.executeQuery(
@@ -194,7 +201,9 @@ public class login extends HttpServlet {
                                         "FROM appello " +
                                         "WHERE materia= " + idcorso);
                         request.setAttribute("appelli", rsAppelli);
-                        request.setAttribute("Materia", rsCorsi.getString("materia"));
+                        request.setAttribute("Materia", materiaNome);
+
+
 
                         request.getRequestDispatcher("professore.jsp").forward(request, response);
                         return;

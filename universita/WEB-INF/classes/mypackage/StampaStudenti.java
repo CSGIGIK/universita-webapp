@@ -80,8 +80,8 @@ public class StampaStudenti extends HttpServlet {
             LEFT JOIN corso c -- prendo TUTTI i DATI di quella colonna per le righe che soddisfano WHERE+JOIN
             ON a.Materia = c.idcorso -- FK=PK
             WHERE a.idAppello = ?  -- PK appello
+            */
 
-		 */
             PreparedStatement stm = con.prepareStatement("select a.Data ,a.Materia, c.Cattedra AS nomeMateria from appello a LEFT JOIN corso c ON a.Materia = c.idcorso WHERE a.idAppello=?");
             stm.setInt(1, idAppello);
             ResultSet rs = stm.executeQuery();
@@ -90,7 +90,7 @@ public class StampaStudenti extends HttpServlet {
                 String dataMateria = rs.getString("Data");
                 request.setAttribute("Materia", nomeMateria);
                 request.setAttribute("Data", dataMateria);
-                // 🔥 mandiamo a professore.jsp studenti
+                //  mandiamo a professore.jsp studenti
                 PreparedStatement stm2 = con.prepareStatement(
                         "SELECT s.nome, s.cognome, s.Matricola " +
                                 "FROM studente s " +
@@ -98,7 +98,7 @@ public class StampaStudenti extends HttpServlet {
                                 "WHERE p.app_prenotato = ?");
                 stm2.setInt(1, idAppello);
                 ResultSet rsStudenti = stm2.executeQuery();
-                request.setAttribute("elenco_studenti", rsStudenti);  // ← JSP while(rs.next())
+                request.setAttribute("elenco_studenti", rsStudenti);  //  JSP while(rs.next())
 
                 request.getRequestDispatcher("professore.jsp").forward(request, response);
                 return;
@@ -108,7 +108,7 @@ public class StampaStudenti extends HttpServlet {
                 return;
             }
         } catch (SQLException e) {
-            request.setAttribute("error", "Errore DB: " + e.getMessage());  // ← Invece di vuoto
+            request.setAttribute("error", "Errore DB: " + e.getMessage());  //  Invece di vuoto
             request.getRequestDispatcher("professore.jsp").forward(request, response);
         }
 

@@ -4,64 +4,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portale Università </title>
+    <title>Portale Università</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Roboto', 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #e2e8f0;
         }
+
         .container {
-            background: rgba(255,255,255,0.95);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: linear-gradient(145deg, rgba(15,23,42,0.9), rgba(30,41,59,0.9));
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
             text-align: center;
-            max-width: 500px;
-            backdrop-filter: blur(10px);
+            max-width: 550px;
+            border: 1px solid rgba(148,163,184,0.3);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
         }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+        }
+
         h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 2.5em;
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
+
         .subtitle {
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            font-size: 1.2em;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            font-size: 1.3em;
+            opacity: 0.9;
         }
+
         .login-btn {
             display: inline-block;
-            background: linear-gradient(45deg, #f39c12, #e67e22);
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
-            padding: 15px 40px;
+            padding: 1.2rem 3rem;
             border-radius: 50px;
             text-decoration: none;
-            font-size: 1.3em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(243,156,18,0.3);
+            font-size: 1.2em;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 12px 30px rgba(59,130,246,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(59,130,246,0.3);
+            backdrop-filter: blur(10px);
         }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
         .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(243,156,18,0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(59,130,246,0.6);
+            background: linear-gradient(135deg, #2563eb, #1e40af);
         }
+
         .features {
-            margin-top: 30px;
+            margin-top: 3rem;
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
+            gap: 1rem;
         }
+
         .feature {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: rgba(30,41,59,0.6);
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            flex: 1;
+            min-width: 140px;
+            border: 1px solid rgba(148,163,184,0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .feature:hover {
+            background: rgba(59,130,246,0.2);
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(59,130,246,0.2);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+            h1 { font-size: 2.2em; }
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            .feature {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>

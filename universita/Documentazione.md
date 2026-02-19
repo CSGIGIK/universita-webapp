@@ -963,15 +963,119 @@ professore.jsp
 </form>
 
 ---
-### 15.13 Gestione Concorrenza Transazionale (18/02/2026)
-**Problema**: Rischio race condition su prenotazioni concorrenti
-**Soluzione**:
-- `conn.setAutoCommit(false)`
-- `SELECT idAppello FROM appello WHERE idAppello = ? FOR UPDATE`
-- Controllo duplicati + INSERT in transazione atomica
-- `conn.commit()` / `conn.rollback()` / `conn.setAutoCommit(true)`
-  **Beneficio**: Prevenzione double-booking garantita anche con accessi concorrenti+
+### 15.13 Modifica Schema Database (18/02/2026)
+**Problema**
+Nessun vincolo di unicità su prenotazioni multiple studente+appello
 
+**Soluzione**
+
+ALTER TABLE prenotazione
+ADD CONSTRAINT unique_stud_app
+UNIQUE KEY (stud_prenotato, app_prenotato);
+
+**Effetto**
+Previene duplicati a livello database
+Abilita INSERT IGNORE (Task 15.14)
+Garantisce integrità referenziale
+
+Verifica:
+SHOW CREATE TABLE prenotazione → UNIQUE constraint visibile
+Test race condition → NO errore constraint violation
+Status: MODIFICA DB APPLICATA E VERIFICATA
+
+---
+### 15.14 Gestione Concorrenza Transazionale (18/02/2026)
+**Problema**: Rischio race condition su prenotazioni concorrenti
+
+**Soluzione** 
+(mypackage.Prenota):
+
+INSERT IGNORE INTO prenotazione(stud_prenotato,app_prenotato) VALUES (?,?)
+Mantiene checkDup pre-esistente per UX
+
+**Risultato**
+Browser A: 1 riga inserita
+Browser B: 0 righe (duplicato ignorato)
+Test 2 browser simultanei: PASSATO
+---
+### 15.15 Chiusura Risorse JDBC (18/02/2026)
+**Problema**: Memory leak critiche (NO close()) in login 
+**OLD**: Statement/ResultSet aperti → Tomcat crash
+
+**Soluzione** 
+- `rs.close()` PRIMA `pstmt.close()` [PADRE-FIGLIO]
+**Risultato**: zero leak
+
+---
+
+### 15.16 Sicurezza Sessioni + Logout (18/02/2026)
+**Problema**: Sessioni potenzialmente vulnerabili a XSS + timeout non configurato
+
+**Soluzione** 
+(web.xml):
+<session-config>
+<session-timeout>30</session-timeout>
+<cookie-config>
+<http-only>true</http-only>
+</cookie-config>
+</session-config>
+**Risultato**:
+<session-timeout>30: Sessione scade dopo 30 minuti inattività → auto-logout
+<http-only>true: Cookie JSESSIONID non leggibile da JavaScript → anti-XSS
+
+**Verifica**
+F12 → Application → Cookies → JSESSIONID → HttpOnly ✓
+console.log(document.cookie) → undefined (JSESSIONID nascosto)
+35min inattività → Ril login obbligatorio
+Risultato: Sessioni protette da furto cookie + auto-logout sicurezza
+---
+### 15.17  MVC Logout: (18/02/2026)
+**Problema**
+Logica di logout implementata in logout.jsp (violazione MVC). Utilizzo di link GET (<a href="logout.jsp">) vulnerabile a CSRF. Scriptlet session.invalidate() direttamente nella View.
+
+1. LogoutServlet.java (Controller):
+@WebServlet("/Logout")
+public class Logout extends HttpServlet {
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+HttpSession session = request.getSession(false);
+if (session != null) session.invalidate();
+response.sendRedirect("index.jsp");
+}
+}
+
+2. Sostituzione nei file JSP (View):
+<form method="POST" action="Logout" style="display:inline;">
+    <button type="submit" class="logout">Logout</button>
+</form>
+
+3. Eliminazione file logout.jsp
+**Risultato**
+Implementazione MVC corretta con separazione Controller (LogoutServlet)-View (form POST). Logout tramite POST (protezione CSRF). Logica centralizzata.
+**Verifica**
+Accesso Studente → clic Logout → redirect index.jsp (sessione invalidata)
+Accesso Professore → clic Logout → redirect index.jsp (sessione invalidata)
+/logout.jsp → HTTP 404
+Network tab: POST /Logout → 302 Redirect → index.jsp
+Risultato: Logout conforme MVC, sicuro (POST-only), centralizzato e manutenibile.
+---
+### 15.18 Uso di scriptlet nelle JSP invece di JSTL/EL. (18/02/2026)
+**problema**
+Problema: Scriptlet <% %> ed espressioni <%= %> in JSP (anti-pattern).
+**Soluzione wip**
+Inserimento Libreria JSTL --wip--
+ jstl-1.2.jar → WEB-INF/lib/ + taglib prefix="c".
+Verifica: Tomcat 9.0.115 startup pulito (785ms), no taglib errors.
+Risultato: <c:out>, <c:if>, <c:forEach> disponibili.
+
+### 15.19  Storage delle password: (18/02/2026)
+**problema**
+Memorizzazione in chiaro nel database (Plaintext)
+**risoluzione (Pianificata/WIP)**
+Analisi dell'implementazione di algoritmi di hashing forte (es. BCrypt o Argon2) con l'aggiunta di un salt univoco per utente.
+Risultato attuale
+Per questa release, il sistema mantiene le password in chiaro per facilitare il debugging e la gestione del database in fase di sviluppo. 
+Nota di sicurezza: Nel prodotto finale questa funzionalità sarebbe la priorità assoluta 
 
 
 ## 16) Sintesi: problemi risolti vs debito tecnico residuo
@@ -991,14 +1095,18 @@ professore.jsp
 - ✅ Miglioramento UX: Sostituzione input numerici manuali con bottoni dinamici generati dal ResultSet degli appelli.
 - ✅ Refactoring Manutenibilità: Bonifica totale del codice legacy con rimozione di variabili non auto-esplicative (ex s1, s2) e commenti obsoleti.
 - ✅ Normalizzazione Flusso MVC: Separazione netta tra logica di controllo (Servlet) e visualizzazione (JSP) con gestione corretta del RequestDispatcher.
+- ✅ Gestione Concorrenza Transazionale: Risoluzione race condition con INSERT IGNORE su prenotazione(stud_prenotato, app_prenotato) + mantenimento checkDup per UX.
+- ✅ Hardening Database: Aggiunta UNIQUE constraint (stud_prenotato, app_prenotato) per garantire integrità referenziale e abilitare atomicità INSERT IGNORE.
+- ✅ Chiusura Risorse JDBC: Eliminati memory leak login (rs.close() prima pstmt.close())
+- ✅ MVC Logout: Rimozione logout.jsp → implementazione LogoutServlet con session.invalidate() 
 
 ### 16.2 Debito tecnico residuo
 
-- ☐ `Connessione` con `Connection` statica e driver JDBC legacy.
-- ☐ Mancanza di pooling e `try-with-resources`.
-- ☐ Passaggio di `ResultSet` dal Controller alla View (forte accoppiamento).
-- ☐ Uso di scriptlet nelle JSP invece di JSTL/EL.
-- ☐ Password in chiaro nel DB e assenza di misure di sicurezza avanzata (CSRF, session fixation, ecc.).
+- ☐ `Connessione` con `Connection` statica e driver JDBC legacy (migrabile a `com.mysql.cj.jdbc.Driver`).
+- ☐ Mancanza di connection pooling e utilizzo sistematico di `try-with-resources` su tutte le Servlet (parziale: chiusura risorse introdotta in alcuni punti, da estendere ovunque).
+- ☐ Passaggio di `ResultSet` dal Controller alla View (accoppiamento forte: da sostituire con DTO/POJO e JSTL/EL).
+- ☐ Uso esteso di scriptlet nelle JSP invece di JSTL/EL (libreria predisposta, migrazione logica ancora da completare).
+- ☐ Password memorizzate in chiaro nel DB (hashing con BCrypt/Argon2 da pianificare).
 
 ---
 
@@ -1006,15 +1114,21 @@ professore.jsp
 
 L’applicazione realizza una **architettura MVC semplificata** basata su:
 
-- **Servlet** come Controller (`login`, `Prenotazione`, `Prenota`, `StampaStudenti`),
-- **JSP** come View (`index.jsp`, `login.jsp`, `studente.jsp`, `professore.jsp`, `logout.jsp`),
+- **Servlet** come Controller (`login`, `Prenotazione`, `Prenota`, `StampaStudenti`, `Logout`),
+- **JSP** come View (`index.jsp`, `login.jsp`, `studente.jsp`, `professore.jsp`),
 - **JDBC** per l’accesso diretto al DB MySQL (`Connessione`).
 
-Le modifiche apportate negli ultimi interventi hanno migliorato:
+Gli interventi recenti hanno risolto in modo verificato criticità funzionali e di sicurezza di base: 
+gestione prenotazioni duplicate (vincolo UNIQUE + INSERT IGNORE), validazioni input robuste, hardening delle query con `PreparedStatement`, 
+routing logout conforme al pattern MVC con richiesta POST e invalidazione sicura della sessione, oltre a miglioramenti di UX (bottoni dinamici, messaggi null-safe) 
+E di gestione delle identità (selettore di ruolo, case-sensitivity).
 
-- la **correttezza funzionale** (join corrette, gestione prenotazioni duplicate, validazione degli ID),
-- la **robustezza** (gestione esplicita di casi negativi e input non validi),
-- la **sicurezza di base** (PreparedStatement per l’autenticazione),
-- la **chiarezza didattica** dei flussi (separazione Home/Login, flussi studente/professore ben delineati).
+Permane un fisiologico 
+**debito tecnico didattico** 
+legato allo strato di persistenza e alla View (Connection statica senza pool, **scriptlet [JSTL libreria inserita (15.18), conversione in corso]**,
+assenza di DAO/DTO e hashing password).
 
-Resta un naturale **debito tecnico didattico** (Connection statica, scriptlet, assenza di DAO/pool/sicurezza avanzata), che può costituire un’ottima base per esercizi di rifattorizzazione verso architetture più moderne e aderenti agli standard enterprise attuali.
+Questi aspetti rappresentano la naturale prossima fase di evoluzione verso uno stack più aderente agli standard attuali 
+(DataSource JNDI con pooling, DAO/Repository, DTO, JSTL/EL, sicurezza avanzata).
+"JSTL libreria inserita (15.18), conversione scriptlet → <c:out> in corso."
+

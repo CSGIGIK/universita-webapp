@@ -1,28 +1,25 @@
 package mypackage;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Connessione {
 
-	private static Connection con;
+    private static Connection con;
 
-	static
-	{
-		try
-		{
-			Class.forName("com.mysql.jdbc.Driver");
-			con=DriverManager.getConnection("jdbc:mysql://localhost:3306/universita","root","Root");
-			System.out.println("Connesso");
-		}catch(ClassNotFoundException | SQLException e)
-		{
-			System.out.println(e.getMessage());
-		}
-	}
+    static {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/universita", "root", "Root");
+            System.out.println("Connesso");
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-	public static Connection getCon()
-	{
-		return con;
-	}
+    public static Connection getCon() {
+        return con;
+    }
 
 }
