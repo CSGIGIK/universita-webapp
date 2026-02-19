@@ -1092,7 +1092,7 @@ Nota di sicurezza: Nel prodotto finale questa funzionalità sarebbe la priorità
 
 
 ### 15.21 Inizio transazione modello DTO/DAO per scopo Ditattico e crescita personale (19/02/2026)
-**IMPLEMENTAZIONE REGISTRAZIONE STUDENTI WIP**
+**IMPLEMENTAZIONE REGISTRAZIONE STUDENTI**
 **Problema**
 Mancanza funzionalità registrazione utenti nel sistema. 
 Necessità di implementare pattern DTO/DAO per gestire registrazione studenti mantenendo separazione responsabilità MVC.
@@ -1108,12 +1108,17 @@ Necessità di implementare pattern DTO/DAO per gestire registrazione studenti ma
 **Query principale:**
   - INSERT IGNORE INTO studente (Matricola,username,password,tipo_utente,nome,cognome)
     VALUES (?,?,?,?,?,?)
-**TEST** reference file path('WEB-INF/TESTREG.java )
+**TEST** reference file path('WEB-INF/TESTREG.java ) **rimosso**
   Output Main:
 - username duplicato → righe=0 → return false
 - Matricola duplicata (PK) → righe=0 → return false
 - Record nuovo → righe=1 → return true
 - Errori DB → catch SQLException → return false
+- RegistrazioneDaoImpl + RegistrazioneDTO ✅
+  INSERT IGNORE + UNIQUE constraints ✅
+  try-with-resources Connection ✅
+  SQLException handling ✅
+
 
 
 ## 16) Sintesi: problemi risolti vs debito tecnico residuo
@@ -1137,7 +1142,7 @@ Necessità di implementare pattern DTO/DAO per gestire registrazione studenti ma
 - ✅ Hardening Database: Aggiunta UNIQUE constraint (stud_prenotato, app_prenotato) per garantire integrità referenziale e abilitare atomicità INSERT IGNORE.
 - ✅ Chiusura Risorse JDBC: Eliminati memory leak login (rs.close() prima pstmt.close())
 - ✅ MVC Logout: Rimozione logout.jsp → implementazione LogoutServlet con session.invalidate() 
-- 🔄 DTO/DAO Registrazione: INSERT IGNORE testato
+- ✅ DTO/DAO Registrazione: INSERT IGNORE testato RegistrazioneDTO.java ✅ RegistrazioneDAOInterface.java ✅ RegistrazioneDaoImpl.java ✅. modulo isolato
 
 ### 16.2 Debito tecnico residuo
 

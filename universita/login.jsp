@@ -303,6 +303,9 @@ String messaggio = (String)request.getAttribute("messaggio");
 
         <input type="submit" value="🚀 Entra nel Portale">
     </form>
+    <a href="formRegS.jsp" style="color: red; font-size: 1.2em; font-weight: bold;">
+        Non sei registrato? Registrati
+    </a>
 </div>
 </body>
 </html>

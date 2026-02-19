@@ -14,7 +14,7 @@ public class RegistrazioneDaoImpl implements RegistrazioneDAOInterface {
     public boolean registra(RegistrazioneDTO utente) throws Exception {
         try(Connection conn = Connessione.getCon()){
         String sqlRegStud = "INSERT IGNORE INTO studente (Matricola,username,password,tipo_utente,nome,cognome) VALUES (?,?,?,?,?,?)";
-        PreparedStatement pstmtStud = conn.prepareStatement(sqlRegStud);
+       try (PreparedStatement pstmtStud = conn.prepareStatement(sqlRegStud)){
         pstmtStud.setInt(1, utente.getMatricola());
         pstmtStud.setString(2, utente.getUsername());
         pstmtStud.setString(3, utente.getPassword());
@@ -23,7 +23,7 @@ public class RegistrazioneDaoImpl implements RegistrazioneDAOInterface {
         pstmtStud.setString(6, utente.getCognome());
         int righe =  pstmtStud.executeUpdate();
         return righe > 0;
-        }catch(SQLException e){
+       }}catch(SQLException e){
             System.out.println("ops");
             return(false);
 

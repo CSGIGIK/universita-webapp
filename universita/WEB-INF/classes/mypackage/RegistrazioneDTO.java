@@ -10,8 +10,16 @@ public class RegistrazioneDTO {
     private String password;      // varchar(20) ← OK!
     private String nome;          // varchar(45)
     private String cognome;       // varchar(45)
-    private String tipo_utente ;         // "studente"/
+    private String tipo_utente ;  // "studente"/
 
+    public RegistrazioneDTO(Integer matricola, String username, String password, String nome, String cognome, String tipo_utente) {
+        this.Matricola = matricola;
+        this.username = username;
+        this.password = password;
+        this.nome = nome;
+        this.cognome = cognome;
+        this.tipo_utente = tipo_utente;
+    }
 
     public void setMatricola(Integer matricola) {
         this.Matricola = matricola;
