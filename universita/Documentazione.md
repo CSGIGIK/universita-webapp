@@ -1077,6 +1077,44 @@ Risultato attuale
 Per questa release, il sistema mantiene le password in chiaro per facilitare il debugging e la gestione del database in fase di sviluppo. 
 Nota di sicurezza: Nel prodotto finale questa funzionalità sarebbe la priorità assoluta 
 
+### 15.20 Leggera modifica db (19/02/2026)
+ **Nota di sviluppo**
+  Modifica lunghezza varchar(5) username to varchar(20). 
+  a seguito di questa modifica si prega di prestare particolare attenzione al punto 15.18 della doc per evitare violazioni di sistema
+  **VERIFICATO:**
+  Matricola=PRI (PK) , username=UNI (NON presente)
+  ALTER TABLE necessario "ALTER TABLE studente ADD UNIQUE(username)"
+  DESC studente 
+  Matricola: PRI (PK) 
+  username: UNI (UNIQUE constraint)  : AGGIUNTO!
+  INSERT IGNORE ora gestisce automaticamente duplicati username pronto per DAO
+  
+
+
+### 15.21 Inizio transazione modello DTO/DAO per scopo Ditattico e crescita personale (19/02/2026)
+**IMPLEMENTAZIONE REGISTRAZIONE STUDENTI WIP**
+**Problema**
+Mancanza funzionalità registrazione utenti nel sistema. 
+Necessità di implementare pattern DTO/DAO per gestire registrazione studenti mantenendo separazione responsabilità MVC.
+**Soluzione implementata (RegistrazioneDaoImpl + RegistrazioneDTO):**
+1. DTO: RegistrazioneDTO
+  - Campi: Matricola(Integer), username, password, tipo_utente, nome, cognome
+  - Getter/setter allineati schema DB "studente"
+
+2. DAO: RegistrazioneDaoImpl implements RegistrazioneDAOInterface
+  - Metodo: public boolean registra(RegistrazioneDTO utente)
+  - INSERT IGNORE + UNIQUE constraint (DB verificato)
+  - try-with-resources + SQLException handling
+**Query principale:**
+  - INSERT IGNORE INTO studente (Matricola,username,password,tipo_utente,nome,cognome)
+    VALUES (?,?,?,?,?,?)
+**TEST** reference file path('WEB-INF/TESTREG.java )
+  Output Main:
+- username duplicato → righe=0 → return false
+- Matricola duplicata (PK) → righe=0 → return false
+- Record nuovo → righe=1 → return true
+- Errori DB → catch SQLException → return false
+
 
 ## 16) Sintesi: problemi risolti vs debito tecnico residuo
 
@@ -1099,6 +1137,7 @@ Nota di sicurezza: Nel prodotto finale questa funzionalità sarebbe la priorità
 - ✅ Hardening Database: Aggiunta UNIQUE constraint (stud_prenotato, app_prenotato) per garantire integrità referenziale e abilitare atomicità INSERT IGNORE.
 - ✅ Chiusura Risorse JDBC: Eliminati memory leak login (rs.close() prima pstmt.close())
 - ✅ MVC Logout: Rimozione logout.jsp → implementazione LogoutServlet con session.invalidate() 
+- 🔄 DTO/DAO Registrazione: INSERT IGNORE testato
 
 ### 16.2 Debito tecnico residuo
 
@@ -1132,3 +1171,6 @@ Questi aspetti rappresentano la naturale prossima fase di evoluzione verso uno s
 (DataSource JNDI con pooling, DAO/Repository, DTO, JSTL/EL, sicurezza avanzata).
 "JSTL libreria inserita (15.18), conversione scriptlet → <c:out> in corso."
 
+### 25 IO
+illuminazione ieri alle ore 1.35 am studiato per 1 mese gli oggetti cercato soluzione per applicarli nel web Dinosauro con testa da robot transizione iniziata
+nota per il futuro, sei un cretino hai avuto quelle 6 lettere davanti gli occhi tutto il tempo hai ricercato tutto meno che quelle (dto/dao) 
