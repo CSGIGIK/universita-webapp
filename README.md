@@ -1187,5 +1187,5 @@ Questi aspetti rappresentano la naturale prossima fase di evoluzione verso uno s
 
 
 ### 25 IO 
-illuminazione ieri alle ore 1.35 am studiato per 1 mese gli oggetti cercato soluzione per applicarli nel web Dinosauro con testa da robot transizione iniziata
-nota per il futuro, sei un cretino hai avuto quelle 6 lettere davanti gli occhi tutto il tempo hai ricercato tutto meno che quelle (dto/dao) 
+illuminazione ieri alle ore 1.35 am studiato per 1 mese gli oggetti potevi arrivarci prima che potevi applicarli nel web.
+nota per il futuro, sei un cretino hai avuto quelle 6 lettere davanti gli occhi tutto il tempo hai fatto ricerche su tutto meno che quelle (dto/dao) 
