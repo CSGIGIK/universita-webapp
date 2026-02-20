@@ -1176,6 +1176,15 @@ Questi aspetti rappresentano la naturale prossima fase di evoluzione verso uno s
 (DataSource JNDI con pooling, DAO/Repository, DTO, JSTL/EL, sicurezza avanzata).
 "JSTL libreria inserita (15.18), conversione scriptlet → <c:out> in corso."
 
-### 25 IO
+
+
+
+
+
+
+
+
+
+### 25 IO 
 illuminazione ieri alle ore 1.35 am studiato per 1 mese gli oggetti cercato soluzione per applicarli nel web Dinosauro con testa da robot transizione iniziata
 nota per il futuro, sei un cretino hai avuto quelle 6 lettere davanti gli occhi tutto il tempo hai ricercato tutto meno che quelle (dto/dao) 

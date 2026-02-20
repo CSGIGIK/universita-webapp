@@ -453,7 +453,7 @@ String Data = (String)request.getAttribute("Data");
         <% if(appelli != null) { %>
         <div class="section">
             <div class="materia-info">
-                <h2>Materia: <%=materia%></h2>
+                <h2>I TUOI APPELLI!</h2>
                 <p>Appelli disponibili</p>
 
                 <div class="form-group text-center">
@@ -463,7 +463,7 @@ String Data = (String)request.getAttribute("Data");
                         <% while(appelli.next()) { %>
                         <form action="StampaStudenti" method="post" style="display:inline-block; margin: 0.5rem;">
                             <input type="hidden" name="ID_appello" value="<%=appelli.getInt(1)%>">
-                            <input type="submit" value="Appello <%=appelli.getDate("data")%>" class="prenota-btn">
+                            <input type="submit" value="<%=appelli.getString("Materia")%> del <%=appelli.getDate("data")%>" class="prenota-btn">
                         </form>
                         <% } %>
                     <% } else { %>

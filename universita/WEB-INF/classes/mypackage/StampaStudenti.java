@@ -61,6 +61,7 @@ public class StampaStudenti extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idAppelloStr = request.getParameter("ID_appello");
         // VALIDAZIONE
+
         int idAppello;
         try {
             idAppello = Integer.parseInt(idAppelloStr);
@@ -73,18 +74,19 @@ public class StampaStudenti extends HttpServlet {
         Connection con = Connessione.getCon();
         try {
 			/* QUERY SPIEGATA
-			SELECT a.Data, -- Appello: data esame
-            a.Materia, -- Appello: codice materia (FK)
-            c.Cattedra -- Corso: nome materia completa
-            FROM appello a -- Tabella principale
-            LEFT JOIN corso c -- prendo TUTTI i DATI di quella colonna per le righe che soddisfano WHERE+JOIN
-            ON a.Materia = c.idcorso -- FK=PK
-            WHERE a.idAppello = ?  -- PK appello
+
+             SELECT a.Data, -- Appello: data esame
+           a.Materia, -- Appello: codice materia (FK)
+           c.Materia -- Corso: nome materia completa ← CAMBIATO!
+            FROM appello a
+            LEFT JOIN corso c ON a.Materia = c.idcorso
+            WHERE a.idAppello=?
             */
 
-            PreparedStatement stm = con.prepareStatement("select a.Data ,a.Materia, c.Cattedra AS nomeMateria from appello a LEFT JOIN corso c ON a.Materia = c.idcorso WHERE a.idAppello=?");
+            PreparedStatement stm = con.prepareStatement("select a.Data ,a.Materia , c.Cattedra AS nomeMateria from appello a LEFT JOIN corso c ON a.Materia = c.idcorso WHERE a.idAppello=?");
             stm.setInt(1, idAppello);
             ResultSet rs = stm.executeQuery();
+
             if (rs.next()) {
                 String nomeMateria = rs.getString("nomeMateria");
                 String dataMateria = rs.getString("Data");

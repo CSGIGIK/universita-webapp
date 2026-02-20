@@ -197,9 +197,10 @@ public class login extends HttpServlet {
 
                         Statement smtAppelli = connProf.createStatement();
                         ResultSet rsAppelli = smtAppelli.executeQuery(
-                                "SELECT idappello, data " +
-                                        "FROM appello " +
-                                        "WHERE materia= " + idcorso);
+                                "SELECT a.idAppello, a.Data, c.Materia " +
+                                        "FROM appello a JOIN corso c ON a.Materia = c.idcorso " +
+                                        "WHERE c.Cattedra = " + idProfessore
+                        );
                         request.setAttribute("appelli", rsAppelli);
                         request.setAttribute("Materia", materiaNome);
 
